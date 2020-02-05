@@ -1,5 +1,5 @@
-#AUTHOR: Eric Becerril-Blas
-# ML Housing dataset (UCI Machine Learning database)
+#AUTHOR: Eric Becerril-Blas <becere1@unlv.nevada.edu>
+#ML Housing dataset (UCI Machine Learning database): https://github.com/rupakc/UCI-Data-Analysis/blob/master/Boston%20Housing%20Dataset/Boston%20Housing/UCI%20Machine%20Learning%20Repository_%20Housing%20Data%20Set.pdf
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ from sklearn import (manifold, datasets, decomposition, ensemble, discriminant_a
 
 def plot_data(data, title, pathname):
     '''
-        Plot the data with given data from task 1 and task 2 and then use plt.clf() to clear current figure
+        Plots the data with given data from task 1 and task 2 and then use plt.clf() to clear current figure
     '''
     i = 0
     k = 0
@@ -47,13 +47,36 @@ def task2(data, labels, images):
     plot_data(tsneX, "2D t-SNE of MNIST",'MNISTt_SNE2D.png')
 
 
-def task3(data, X):
+def task3(data):
     '''
         Visualize the housing data using violin plot.
     '''
-    plt.plot(X, 'ko')
-    plt.title("Violin Plot of MNIST")
-    plt.savefig('ViolinPlot.png')
+    CRIM = data["CRIM"]
+    ZN = data["ZN"]
+    INDUS = data["INDUS"]
+    CHAS = data["CHAS"]
+    NOX = data["NOX"]
+    RM = data["RM"]
+    AGE = data["AGE"]
+    DIS = data["DIS"]
+    RAD = data["RAD"]
+    TAX = data["TAX"]
+    PTRATIO = data["PTRATIO"]
+    B = data["B"]
+    LSTAT = data["LSTAT"]
+    MEDV = data["MEDV"]
+    # Create a figure instance
+    fig = plt.figure()
+
+    # Create an axes instance
+    ax = fig.add_axes([0,0,1,1])
+
+    # Create the boxplot
+    bp = ax.violinplot(CRIM)
+    plt.show()
+#    plt.plot(CRIM, 'ko')
+#    plt.title("Violin Plot of MNIST")
+#    plt.savefig('ViolinPlot.png')
 
 
 def main():
@@ -70,13 +93,12 @@ def main():
     X = MNIST_df.drop('label', axis=1) # pixel values for image
 
     # Create Dataframe for housing dataset
-    HOUSING_df = pd.read_csv("housing_training.csv")
-    Z = HOUSING_df.iloc[:, 0:2]
+    HOUSING_df = pd.read_csv("housing_training.csv",names=["CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM","AGE","DIS","RAD","TAX","PTRATIO","B","LSTAT","MEDV"])
 
-    # Call functions for each task 
+    # Call functions for each task
     task1(MNIST_df,y,X)
     task2(MNIST_df,y,X)
-    task3(HOUSING_df,Z)
+    task3(HOUSING_df)
 
 if __name__== "__main__":
     main()
