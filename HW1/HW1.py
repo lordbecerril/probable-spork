@@ -51,39 +51,29 @@ def task3(data):
     '''
         Visualize the housing data using violin plot.
     '''
-    CRIM = data["CRIM"]
-    ZN = data["ZN"]
-    INDUS = data["INDUS"]
-    CHAS = data["CHAS"]
-    NOX = data["NOX"]
-    RM = data["RM"]
-    AGE = data["AGE"]
-    DIS = data["DIS"]
-    RAD = data["RAD"]
-    TAX = data["TAX"]
-    PTRATIO = data["PTRATIO"]
-    B = data["B"]
-    LSTAT = data["LSTAT"]
-    MEDV = data["MEDV"]
-    # Create a figure instance
-    fig = plt.figure()
+    # array variable with each column of housing data
+    all_data = [data["CRIM"], data["ZN"], data["INDUS"], data["CHAS"], data["NOX"], data["RM"], data["AGE"], data["DIS"], data["RAD"],data["TAX"],data["PTRATIO"],data["B"],data["LSTAT"],data["MEDV"]]
 
-    # Create an axes instance
-    ax = fig.add_axes([0,0,1,1])
+    # The labels for the x-axis
+    x_labels = ["CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM","AGE","DIS","RAD","TAX","PTRATIO","B","LSTAT","MEDV"]
 
-    # Create the boxplot
-    bp = ax.violinplot(CRIM)
-    plt.show()
-#    plt.plot(CRIM, 'ko')
-#    plt.title("Violin Plot of MNIST")
-#    plt.savefig('ViolinPlot.png')
+    plt.xticks(ticks = [y + 1 for y in range(len(all_data))],labels = x_labels)
+
+    # Create the violin plots
+    plt.violinplot(all_data,
+                   showmeans=True,
+                   showmedians=True)
+    plt.title("Violin Plot of MNIST")
+    #plt.show() #uncomment to see Violin Plot
+    plt.tight_layout()
+    plt.savefig('ViolinPlot.png')
 
 
 def main():
     '''
         The main body of the program which runs all 3 tasks
     '''
-    print("Hello World from HW1.py Script!")
+    print("Hello World from HW1.py Script!\n")
 
     # Create Dataframe for MNIST data
     MNIST_df = pd.read_csv("MNIST_100.csv")
@@ -97,8 +87,16 @@ def main():
 
     # Call functions for each task
     task1(MNIST_df,y,X)
+    print("2D PCA created and can be viewed in MNISTpca2D.png\n")
+
     task2(MNIST_df,y,X)
+    print("2D t-SNE created and can be viewed in MNISTt_SNE2D.png\n")
+
     task3(HOUSING_df)
+    print("Violin Plot created and can be viewed in ViolinPlot.png\n")
+    
+    print("HW1.py is finished. Have a good day! :)")
+
 
 if __name__== "__main__":
     main()
