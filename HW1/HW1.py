@@ -50,6 +50,23 @@ def task2(data, labels, images):
 def task3(data):
     '''
         Visualize the housing data using violin plot.
+        1. CRIM      per capita crime rate by town
+        2. ZN        proportion of residential land zoned for lots over
+                     25,000 sq.ft.
+        3. INDUS     proportion of non-retail business acres per town
+        4. CHAS      Charles River dummy variable (= 1 if tract bounds
+                     river; 0 otherwise)
+        5. NOX       nitric oxides concentration (parts per 10 million)
+        6. RM        average number of rooms per dwelling
+        7. AGE       proportion of owner-occupied units built prior to 1940
+        8. DIS       weighted distances to five Boston employment centres
+        9. RAD       index of accessibility to radial highways
+        10. TAX      full-value property-tax rate per $10,000
+        11. PTRATIO  pupil-teacher ratio by town
+        12. B        1000(Bk - 0.63)^2 where Bk is the proportion of blacks
+                     by town
+        13. LSTAT    % lower status of the population
+        14. MEDV     Median value of owner-occupied homes in $1000's
     '''
     # array variable with each column of housing data
     all_data = [data["CRIM"], data["ZN"], data["INDUS"], data["CHAS"], data["NOX"], data["RM"], data["AGE"], data["DIS"], data["RAD"],data["TAX"],data["PTRATIO"],data["B"],data["LSTAT"],data["MEDV"]]
@@ -72,6 +89,19 @@ def task3(data):
 def main():
     '''
         The main body of the program which runs all 3 tasks
+
+        sample output should look as follows
+
+            Hello World from HW1.py Script!
+
+            2D PCA created and can be viewed in MNISTpca2D.png
+
+            2D t-SNE created and can be viewed in MNISTt_SNE2D.png
+
+            Violin Plot created and can be viewed in ViolinPlot.png
+
+            HW1.py is finished. Have a good day! :)
+
     '''
     print("Hello World from HW1.py Script!\n")
 
@@ -87,13 +117,13 @@ def main():
 
     # Call functions for each task
     task1(MNIST_df,y,X)
-    print("2D PCA created and can be viewed in MNISTpca2D.png\n")
+    print("2D PCA created and saved as MNISTpca2D.png\n")
 
     task2(MNIST_df,y,X)
-    print("2D t-SNE created and can be viewed in MNISTt_SNE2D.png\n")
+    print("2D t-SNE created and saved as MNISTt_SNE2D.png\n")
 
     task3(HOUSING_df)
-    print("Violin Plot created and can be viewed in ViolinPlot.png\n")
+    print("Violin Plot created and saved as ViolinPlot.png\n")
 
     print("HW1.py is finished. Have a good day! :)")
 

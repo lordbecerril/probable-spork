@@ -10,6 +10,11 @@ def main():
     '''
     print("Hello World from KNNscratch.py Script!")
 
+    # Create Dataframe for MNIST test data
+    MNISTtest_df = pd.read_csv("MNIST_test.csv")
+
+    # Create Dataframe for MNIST training data
+    MNISTtrain_df = pd.read_csv("MNIST_train.csv")
 
 
 if __name__== "__main__":
