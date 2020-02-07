@@ -63,7 +63,7 @@ def task3(data):
     plt.violinplot(all_data,
                    showmeans=True,
                    showmedians=True)
-    plt.title("Violin Plot of MNIST")
+    plt.title("Violin Plot of Boston Housing Data")
     #plt.show() #uncomment to see Violin Plot
     plt.tight_layout()
     plt.savefig('ViolinPlot.png')
@@ -94,7 +94,7 @@ def main():
 
     task3(HOUSING_df)
     print("Violin Plot created and can be viewed in ViolinPlot.png\n")
-    
+
     print("HW1.py is finished. Have a good day! :)")
 
 

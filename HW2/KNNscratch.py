@@ -6,7 +6,7 @@ from matplotlib.ticker import NullFormatter
 
 def main():
     '''
-        The main body of the program which runs all 3 tasks
+        The main body of the program
     '''
     print("Hello World from KNNscratch.py Script!")
 
