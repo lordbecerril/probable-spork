@@ -2,9 +2,9 @@
 
 
 
-![PCA](/MNISTpca2D.png)
+![PCA](./MNISTpca2D.png)
 
 
-![t-SNE](/MNISTt_SNE2D.png)
+![t-SNE](./MNISTt_SNE2D.png)
 
-![Violin Plot](/ViolinFigure.png)
+![Violin Plot](./ViolinFigure.png)
