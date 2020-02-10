@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.manifold import TSNE
 from sklearn import (manifold, datasets, decomposition, ensemble, discriminant_analysis, random_projection, neighbors)
 
-def plot_data(data, title, pathname):
+def plot_2d_data(data, title, pathname):
     '''
         Plots the data with given data from task 1 and task 2 and then use plt.clf() to clear current figure
     '''
@@ -20,6 +20,24 @@ def plot_data(data, title, pathname):
     while i < 1000:
         j = i + 100
         plt.scatter(data[i:j, 0], data[i:j, 1], marker='$'+str(k)+'$')
+        k = k + 1
+        i = i + 100
+    plt.title(title)
+    plt.savefig(pathname)
+    plt.clf()
+
+def plot_3d_data(data, title, pathname):
+    '''
+        Plots the data with given data from task 1 and task 2 and then use plt.clf() to clear current figure
+    '''
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    i = 0
+    k = 0
+    while i < 1000:
+        j = i + 100
+        ax.scatter(data[i:j, 0], data[i:j, 1], data[i:j, 2], marker='$'+str(k)+'$')
         k = k + 1
         i = i + 100
     plt.title(title)
@@ -35,7 +53,11 @@ def task1(data, labels, images):
     pca = PCA(n_components=2)
     pca.fit(images)
     PCAX = pca.transform(images)
-    plot_data(PCAX, "2D PCA of MNIST",'MNISTpca2D.png')
+    plot_2d_data(PCAX, "2D PCA of MNIST",'MNISTpca2D.png')
+    pca = PCA(n_components=3)
+    pca.fit(images)
+    PCAX = pca.transform(images)
+    plot_3d_data(PCAX, "3D PCA of MNIST",'MNISTpca3D.png')
 
 
 def task2(data, labels, images):
@@ -44,8 +66,10 @@ def task2(data, labels, images):
     '''
     tsne = TSNE(n_components=2)
     tsneX = tsne.fit_transform(images)
-    plot_data(tsneX, "2D t-SNE of MNIST",'MNISTt_SNE2D.png')
-
+    plot_2d_data(tsneX, "2D t-SNE of MNIST",'MNISTt_SNE2D.png')
+    tsne = TSNE(n_components=3)
+    tsneX = tsne.fit_transform(images)
+    plot_3d_data(tsneX, "3D t-SNE of MNIST",'MNISTt_SNE3D.png')
 
 def task3(data):
     '''
@@ -118,9 +142,12 @@ def main():
     # Call functions for each task
     task1(MNIST_df,y,X)
     print("2D PCA created and saved as MNISTpca2D.png\n")
+    print("3D PCA created and saved as MNISTpca3D.png\n")
 
     task2(MNIST_df,y,X)
     print("2D t-SNE created and saved as MNISTt_SNE2D.png\n")
+    print("3D t-SNE created and saved as MNISTt_SNE3D.png\n")
+
 
     task3(HOUSING_df)
     print("Violin Plot created and saved as ViolinPlot.png\n")
