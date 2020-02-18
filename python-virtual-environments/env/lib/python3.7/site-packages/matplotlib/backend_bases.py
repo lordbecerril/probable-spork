@@ -54,7 +54,7 @@ from matplotlib.transforms import Affine2D
 from matplotlib.path import Path
 
 try:
-    from PIL import PILLOW_VERSION
+    from PIL import __version__ as PILLOW_VERSION
     from distutils.version import LooseVersion
     if LooseVersion(PILLOW_VERSION) >= "3.4":
         _has_pil = True
@@ -1110,7 +1110,7 @@ class TimerBase(object):
             if provided.
         """
         if interval is not None:
-            self._set_interval(interval)
+            self.interval = interval
         self._timer_start()
 
     def stop(self):
@@ -1640,8 +1640,10 @@ class FigureCanvasBase(object):
     @contextmanager
     def _idle_draw_cntx(self):
         self._is_idle_drawing = True
-        yield
-        self._is_idle_drawing = False
+        try:
+            yield
+        finally:
+            self._is_idle_drawing = False
 
     def is_saving(self):
         """

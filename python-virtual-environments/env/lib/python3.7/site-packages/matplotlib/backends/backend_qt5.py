@@ -498,17 +498,17 @@ class FigureCanvasQT(QtWidgets.QWidget, FigureCanvasBase):
             QtCore.QTimer.singleShot(0, self._draw_idle)
 
     def _draw_idle(self):
-        if self.height() < 0 or self.width() < 0:
+        with self._idle_draw_cntx():
+            if not self._draw_pending:
+                return
             self._draw_pending = False
-        if not self._draw_pending:
-            return
-        try:
-            self.draw()
-        except Exception:
-            # Uncaught exceptions are fatal for PyQt5, so catch them instead.
-            traceback.print_exc()
-        finally:
-            self._draw_pending = False
+            if self.height() < 0 or self.width() < 0:
+                return
+            try:
+                self.draw()
+            except Exception:
+                # Uncaught exceptions are fatal for PyQt5, so catch them.
+                traceback.print_exc()
 
     def drawRectangle(self, rect):
         # Draw the zoom rectangle to the QPainter.  _draw_rect_callback needs
@@ -1092,9 +1092,12 @@ class _BackendQT5(_Backend):
     def mainloop():
         old_signal = signal.getsignal(signal.SIGINT)
         # allow SIGINT exceptions to close the plot window.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        is_python_signal_handler = old_signal is not None
+        if is_python_signal_handler:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
         try:
             qApp.exec_()
         finally:
             # reset the SIGINT exception handler
-            signal.signal(signal.SIGINT, old_signal)
+            if is_python_signal_handler:
+                signal.signal(signal.SIGINT, old_signal)
