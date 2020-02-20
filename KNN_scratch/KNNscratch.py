@@ -1,6 +1,7 @@
 #AUTHOR: Eric Becerril-Blas <becere1@unlv.nevada.edu>
 import pandas as pd
 import numpy as np
+import math
 from numpy import linalg as LA
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
@@ -9,6 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 from math import sqrt
 from mpl_toolkits.mplot3d import Axes3D
 from statistics import mode
+from statistics import mean
 import operator
 from scipy.spatial import distance
 from sklearn import (manifold, datasets, decomposition, ensemble,
@@ -74,9 +76,10 @@ def predict_classification(train, row, k, file, dimensionality):
             dimensionality: the dimensions
     """
     neighbors = get_neighbors(train, row, k, dimensionality)
-
+    #print(neighbors)
     try:
         # using the built in stat mode function, return the neighbor label that shows up the most
+        #print("Mean is", mean(neighbors))
         return(mode(neighbors))
     except:
         # if there was no unique mode, return the smaller number
@@ -109,7 +112,7 @@ def KNN(train, test, dimensionality, fname):
     """
     file = open(fname, "w+") # Create an output .txt file
     # We wanna see accuracy for various values for K so here he have a loop to go through many values
-    for k in range(1,91):
+    for k in range(5,16):
         file.write("For k = "+str(k)+"\n") # Write to output file
         # If statement below For 3 Dimensions
         if dimensionality == 3:
@@ -140,6 +143,8 @@ def KNN(train, test, dimensionality, fname):
             file.write('\n') # linefeed to .txt
             print('Accuracy of KNN was '+str(accur)+'% with k equal to '+str(k)) # Print to command line
     file.close() # Close the outuput file
+
+
 
 def reduce_data_to_2d(data, type):
     """
@@ -217,7 +222,7 @@ def reduction_2D(reduc_method, to_csv_name_train, to_csv_name_test, master_txt_f
 
     reduced_df_test = reduce_data_to_2d(MNISTtest_df,reduc_method) # reduce the dimensionality of test datato 2 dimensions
     reduced_df_test.to_csv(to_csv_name_test, index = False) # Write to CSV to see output of dimensionality reduction
-
+    #train_KNN(reduced_df_train,reduced_df_train,2,"2DTrainer.txt")
     KNN(reduced_df_train, reduced_df_test, 2, master_txt_file) # KNN time
 
 def reduction_3D(reduc_method, to_csv_name_train, to_csv_name_test, master_txt_file):
@@ -233,8 +238,22 @@ def reduction_3D(reduc_method, to_csv_name_train, to_csv_name_test, master_txt_f
 
     reduced_df_test = reduce_data_to_3d(MNISTtest_df,reduc_method) # reduce the dimensionality of test data to 3 dimensions
     reduced_df_test.to_csv(to_csv_name_test, index = False) # Write to CSV to see output of dimensionality reduction
-
+    #train_KNN(reduced_df_train,reduced_df_train,3,"3DTrainer.txt")
     KNN(reduced_df_train, reduced_df_test, 3, master_txt_file) #KNN time
+
+def subtractor(test_row,data,labels):
+    distances = []
+    for index, row in data.iterrows():
+        dist = get_eucladian_distance(test_row, row.values)
+        distances.append(dist)
+    columns = ['distance'] # declare column names
+    df1 = pd.DataFrame(data=distances, columns=columns) # Make reduced data into a dataframe
+    df = pd.concat([labels, df1], axis=1) # Make a new dataframe with the labels now added to it
+    df = df.sort_values(by=['distance'], ascending=True)
+    df = df.reset_index()
+    return(df)
+
+
 
 
 def main():
@@ -249,25 +268,67 @@ def main():
 
     # ---------------
     print("Commencing KNN using MNIST reduced to 2D by PCA")
-    reduction_2D("PCA", "2dPCA_MNISTtrain_data.csv", "2dPCA_MNISTtest_data.csv", "AccuracyWithPCA2D.txt")
+    #reduction_2D("PCA", "2dPCA_MNISTtrain_data.csv", "2dPCA_MNISTtest_data.csv", "AccuracyWithPCA2D.txt")
     print("2D PCA finished\n")
 
     # ---------------
     print("Commencing KNN using MNIST reduced to 3D by PCA")
-    reduction_3D("PCA", "3dPCA_MNISTtrain_data.csv", "3dPCA_MNISTtest_data.csv", "AccuracyWithPCA3D.txt")
+    #reduction_3D("PCA", "3dPCA_MNISTtrain_data.csv", "3dPCA_MNISTtest_data.csv", "AccuracyWithPCA3D.txt")
     print("3D PCA finished\n")
 
     # ---------------
     print("Commencing KNN using MNIST reduced to 2D by t-SNE")
-    reduction_2D("t-SNE", "2dtsne_MNISTtrain_data.csv", "2dtsne_MNISTtest_data.csv",  "AccuracyWithtSNE2D.txt")
+    #reduction_2D("t-SNE", "2dtsne_MNISTtrain_data.csv", "2dtsne_MNISTtest_data.csv",  "AccuracyWithtSNE2D.txt")
     print("2D t-SNE finished\n")
 
     # ---------------
     print("Commencing KNN using MNIST reduced to 3D by t-SNE")
-    reduction_3D("t-SNE", "3dtsne_MNISTtrain_data.csv", "3dtsne_MNISTtest_data.csv","AccuracyWithtSNE3D.txt")
+    #reduction_3D("t-SNE", "3dtsne_MNISTtrain_data.csv", "3dtsne_MNISTtest_data.csv","AccuracyWithtSNE3D.txt")
     print("3D t-SNE finished\n")
 
     # ---------------
+    print("Let's do this")
+    #MNISTtrain_df
+    #MNISTtest_df
+    # add the first test data into the training data X
+    # let i be the index of the test data that we want to predict
+    K = 5
+    train_labels = MNISTtrain_df.iloc[:, 0] # label data
+    train_images = MNISTtrain_df.drop('label', axis=1) # pixel values for image
+
+    test_labels = MNISTtest_df.iloc[:, 0] # label data
+    test_images = MNISTtest_df.drop('label', axis=1) # pixel values for image
+    neighbors = []
+    num_correct = 0 # variable used to count the number of correct predictions
+
+    for index, row in test_images.iterrows():
+        #print(row.values) #get first row
+        print(index)
+        df = subtractor(row.values, train_images,train_labels) #subtract to all vals in train data
+        print(df)
+        for i in range(K): # for range in the k value
+            neighbors.append(df['label'][i]) # append the label to the neighbors list
+        print(neighbors)
+        prediction = compute_mode(neighbors)
+        neighbors = []
+        print('Expected '+str(test_labels[index])+', Got '+str(prediction)+" for K = "+str(K))
+        if test_labels[index] == prediction:
+            num_correct = num_correct + 1
+            print("Number correct is ", num_correct)
+    accur = (num_correct/50) * 100 # Calculate the accuracy
+    print('Accuracy of KNN was '+str(accur)+'% with k equal to '+str(K)) # Print to command line
+
+
+#    X_eval = train_images.append(np.transpose(pd.DataFrame(test_images.iloc[i, :])))
+#    X_eval.index = range(0, train_images.shape[0] + 1)
+#    nbrs = NearestNeighbors(n_neighbors = K + 1).fit(X_eval)
+#    distances, indices = nbrs.kneighbors(X_eval)
+#    print([distances[300], indices[300]])
+#    print(train_labels[indices[300][1:]]) # what are labels of the neighbors?
+#    print(sum(train_labels[indices[300][1:]]) > (K/2)) # True is major?
+#    print(test_labels[i])
+
+
     print("KNNscratch.py is finished, have a great day! :)")
 
 
