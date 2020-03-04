@@ -86,6 +86,7 @@ def main():
     neighbors = [] #empty neighbors array... use this to populate neighbors
     K_vals = [] # empty array to hold K_vals
     Accuracies = [] # empty array to hold Accuracies
+
     for K in range(1, 15):
         K_vals.append(K)
         # For loop through various values of K
