@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import math
 import random
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+import statistics
 
 
 # Datasets given to me from course web page
@@ -18,7 +19,7 @@ def generateImages(data):
         img = np.array(data.loc[i:i,1:]).reshape(15, 15)
         #plt.imshow(img)
         #plt.show()
-        plt.savefig("./images/"+str(i)+".png")
+        #plt.savefig("./images/"+str(i)+".png")
 
 def SolverLinearRegression(X, y):
     XTdotX = np.dot(X.transpose(), X)
@@ -55,24 +56,30 @@ def CreateDataFrame(data, Normalized):
 
 
 def LinearRegressionClassification(cluster, Normalized):
+    Accuracies = []
     for k in range(len(cluster.index)):
-        f = open("experiment"+str(k+1)+".txt", "w")
+        subAccuracies=[]
+        TPR_arr = []
+        FPR_arr = []
+        #f = open("experiment"+str(k+1)+".txt", "w")
         print("Starting Experiment "+str(k+1))
 
-        # Gets the first row of the cluster data (33 random indices)
+        # Gets the k row of the cluster data (33 random indices)
         test_data = cluster.iloc[k]
         #print("Test data is:")
         #print(test_data)
 
-        # Gets everything else but the first row
+        # Gets everything else but the k row
         train_data = cluster.drop(cluster.index[k])
         #print("Train Data is:")
         #print(train_data)
 
         # Create data frame with actual data
         TEST_df = CreateDataFrame(test_data, Normalized)
-        f.write("Test dataframe being used is:\n")
-        f.write(str(TEST_df.values)+"\n")
+        print("Test data set labels are:")
+        print(TEST_df[0].values)
+        #f.write("Test dataframe being used is:\n")
+        #f.write(str(TEST_df.values)+"\n")
         #print("Test dataframe with Normalized pixel values:")
         #print(TEST_df)
 
@@ -81,14 +88,14 @@ def LinearRegressionClassification(cluster, Normalized):
 
         # Iterate through rows of
         for i in range(len(train_data.index)):
-            f.write("Training with \n")
+            #f.write("Training with \n")
 
             # Create dataframe of training data
             dummy = train_data.iloc[i]
             TRAIN_df = CreateDataFrame(dummy, Normalized)
             #print("Train dataframe with normalized pixel values")
             #print(TRAIN_df)
-            f.write(str(TRAIN_df.values)+"\n")
+            #f.write(str(TRAIN_df.values)+"\n")
 
             # FROM KANGS NOTES ... Aka magic
             n, p = TRAIN_df.shape # number of samples and features
@@ -113,14 +120,44 @@ def LinearRegressionClassification(cluster, Normalized):
             b_opt = SolverLinearRegression(X, y)
             #print("bopt is ")
             #print(b_opt)
-            SUMMER = sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth) / len(y_groundtruth)
-            print("Accuracy is "+str(SUMMER))
-            f.write("Accuracy is "+str(SUMMER)+"\n")
-            # visualization of the result
-            plt.plot(np.dot(X_test, b_opt), 'ro', y, 'bo')
-            plt.show()
-        f.close()
 
+            #print("np.dot(X_test, b_opt) is")
+            #print(np.dot(X_test, b_opt))
+
+            #print("np.array(np.dot(X_test, b_opt) > 0.5) is")
+            #print(np.array(np.dot(X_test, b_opt) > 0.5))
+
+            #print("sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth) is")
+            #print(sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth))
+            TPR_arr.append(float(sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth))/33)
+            FPR_arr.append( float(33 - sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth))/33)
+            SUMMER = sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth) / len(y_groundtruth)
+            subAccuracies.append(SUMMER)
+            #print("Accuracy is "+str(SUMMER))
+            #f.write("Accuracy is "+str(SUMMER)+"\n")
+            # visualization of the result
+#            plt.plot(np.dot(X_test, b_opt), 'ro', y, 'bo')
+            #plt.show()
+        # intialise data of lists.
+        data = {'TPR':TPR_arr, 'FPR':FPR_arr, 'Accuracies':subAccuracies}
+        TprFprFrame = pd.DataFrame(data)
+        print(TprFprFrame)
+        print("\n")
+        Accuracies.append(subAccuracies)
+        #f.close()
+    print("Accuracies of each experiment are: ")
+    df = pd.DataFrame(Accuracies)
+    print(df)
+    aoee = []
+    for i in range(len(df.index)):
+        a = statistics.mean(df.iloc[i].values)
+        aoee.append(a)
+    #print(aoee)
+    data = {'Averaged Accuracies':aoee,'Experiment': [1, 2,3,4,5,6,7,8,9,10]}
+    averages_of_experiments = pd.DataFrame(data)
+    averages_of_experiments = averages_of_experiments.set_index('Experiment')
+    print("Averages of each experiment are:")
+    print(averages_of_experiments)
 
 def main():
     """
